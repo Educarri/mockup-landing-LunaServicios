@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Préstamos - Luna Servicios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FFD500 0%, #FFB84D 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: #5B3FD6;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            color: #5B3FD6;
+            margin-bottom: 25px;
+            font-size: 26px;
+            border-bottom: 3px solid #FFD500;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #5B3FD6;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        input[type="email"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #5B3FD6;
+            box-shadow: 0 0 0 3px rgba(91, 63, 214, 0.1);
+        }
+
+        .range-container {
+            margin-top: 10px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #5B3FD6;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #5B3FD6;
+            cursor: pointer;
+        }
+
+        .value-display {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #5B3FD6;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f8f8;
+            border-radius: 8px;
+        }
+
+        button {
+            background: #5B3FD6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #4A2FB5;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(91, 63, 214, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .resultado {
+            background: linear-gradient(135deg, #5B3FD6 0%, #4A2FB5 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .resultado h3 {
+            margin-bottom: 20px;
+            font-size: 22px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .resultado-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .resultado-item:last-child {
+            border-bottom: none;
+        }
+
+        .resultado-label {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+
+        .resultado-valor {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .total-destacado {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .total-destacado .valor {
+            font-size: 36px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .comparador {
+            grid-column: 1 / -1;
+        }
+
+        .planes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .plan-card {
+            background: linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 100%);
+            padding: 25px;
+            border-radius: 15px;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .plan-card:hover {
+            border-color: #5B3FD6;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(91, 63, 214, 0.2);
+        }
+
+        .plan-card.selected {
+            border-color: #5B3FD6;
+            background: linear-gradient(135deg, #5B3FD6 0%, #4A2FB5 100%);
+            color: white;
+        }
+
+        .plan-nombre {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .plan-monto {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .plan-detalle {
+            font-size: 14px;
+            opacity: 0.8;
+            margin: 8px 0;
+        }
+
+        .historial {
+            grid-column: 1 / -1;
+        }
+
+        .historial-item {
+            background: #f8f8f8;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 5px solid #5B3FD6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .historial-info {
+            flex: 1;
+        }
+
+        .historial-fecha {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .historial-monto {
+            font-size: 24px;
+            color: #5B3FD6;
+            font-weight: bold;
+        }
+
+        .btn-secondary {
+            background: #FF6B6B;
+            padding: 10px 20px;
+            font-size: 14px;
+            width: auto;
+        }
+
+        .btn-secondary:hover {
+            background: #ff5252;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .planes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<div><nav>
+        <navigation>
+            <a href="carrito-simple.html">Carrito Simple</a>
+        </navigation>
+    </nav>
+    </div>
+
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>🌙 Luna Servicios</h1>
+            <p>Calculadora de Préstamos Personales</p>
+        </div>
+
+        <!-- GRID PRINCIPAL -->
+        <div class="main-grid">
+            <!-- CALCULADORA -->
+            <div class="card">
+                <h2>💰 Calculá tu Préstamo</h2>
+
+                <div class="form-group">
+                    <label for="monto">Monto que necesitás</label>
+                    <input type="range" id="monto" min="10000" max="200000" step="5000" value="50000"
+                        oninput="actualizarMonto(this.value)">
+                    <div class="value-display" id="montoDisplay">$50.000</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cuotas">Cantidad de cuotas</label>
+                    <select id="cuotas" onchange="calcularPrestamo()">
+                        <option value="6">6 cuotas</option>
+                        <option value="12" selected>12 cuotas</option>
+                        <option value="18">18 cuotas</option>
+                        <option value="24">24 cuotas</option>
+                        <option value="36">36 cuotas</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="interes">Tasa de interés mensual (%)</label>
+                    <input type="range" id="interes" min="5" max="50" step="5" value="5"
+                        oninput="actualizarInteres(this.value)">
+                    <div class="value-display" id="interesDisplay">5%</div>
+                </div>
+
+                <button onclick="calcularPrestamo()">
+                    🔢 Calcular
+                </button>
+
+                <div id="resultadoCalculo"></div>
+            </div>
+
+            <!-- FORMULARIO DE CONTACTO -->
+            <div class="card">
+                <h2>📋 Solicitá tu Préstamo</h2>
+
+                <div class="form-group">
+                    <label for="nombre">Nombre completo</label>
+                    <input type="text" id="nombre" placeholder="Juan Pérez">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="juan@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input type="text" id="telefono" placeholder="+54 9 11 1234-5678">
+                </div>
+
+                <div class="form-group">
+                    <label for="comentarios">Comentarios (opcional)</label>
+                    <input type="text" id="comentarios" placeholder="Necesito el dinero para...">
+                </div>
+
+                <button onclick="enviarSolicitud()">
+                    📤 Enviar Solicitud
+                </button>
+            </div>
+        </div>
+
+        <!-- COMPARADOR DE PLANES -->
+        <div class="card comparador">
+            <h2>⚖️ Compará nuestros planes</h2>
+            <div class="planes-grid" id="planesGrid"></div>
+        </div>
+
+        <!-- HISTORIAL -->
+        <div class="card historial">
+            <h2>📊 Historial de Simulaciones</h2>
+            <div id="historialContainer"></div>
+            <button onclick="limpiarHistorial()" class="btn-secondary" style="margin-top: 15px;">
+                🗑️ Limpiar Historial
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // DATOS GLOBALES
+        // ==========================================
+        const planesDisponibles = [
+            { id: 1, nombre: "Luna Express", monto: 30000, cuotas: 6, interes: 3 },
+            { id: 2, nombre: "Luna Start", monto: 50000, cuotas: 12, interes: 4 },
+            { id: 3, nombre: "Luna Plus", monto: 100000, cuotas: 24, interes: 5 },
+            { id: 4, nombre: "Luna Premium", monto: 150000, cuotas: 36, interes: 6 }
+        ];
+
+        let historialSimulaciones = [];
+        let planSeleccionado = null;
+
+        // ==========================================
+        // FUNCIÓN: ACTUALIZAR MONTO EN PANTALLA
+        // ==========================================
+        const actualizarMonto = (valor) => {
+            document.getElementById('montoDisplay').textContent =
+                `$${parseInt(valor).toLocaleString()}`;
+        };
+
+        // ==========================================
+        // FUNCIÓN: ACTUALIZAR INTERÉS EN PANTALLA
+        // ==========================================
+        const actualizarInteres = (valor) => {
+            document.getElementById('interesDisplay').textContent = `${valor}%`;
+        };
+
+        // ==========================================
+        // EJERCICIO 1: CALCULAR PRÉSTAMO
+        // ==========================================
+        const calcularPrestamo = () => {
+            // OBTENER VALORES DEL FORMULARIO
+            const monto = parseInt(document.getElementById('monto').value);
+            const cuotas = parseInt(document.getElementById('cuotas').value);
+            const interesMensual = parseFloat(document.getElementById('interes').value) / 100;
+
+            // TU CÓDIGO AQUÍ:
+            // 1. Calcular el interés total: monto * interesMensual * cuotas
+            // 2. Calcular el total a pagar: monto + interesTotal
+            // 3. Calcular la cuota mensual: totalAPagar / cuotas
+
+            const interesTotal = parseFloat(monto * interesMensual * cuotas);
+            const totalAPagar = parseFloat(monto + interesTotal);
+            const cuotaMensual = Math.round(totalAPagar / cuotas);
+
+            // Mostrar resultado
+            mostrarResultado(monto, cuotas, interesTotal, totalAPagar, cuotaMensual);
+
+            // Guardar en historial
+            guardarEnHistorial(monto, cuotas, totalAPagar);
+        };
+
+        // ==========================================
+        // FUNCIÓN: MOSTRAR RESULTADO
+        // ==========================================
+        const mostrarResultado = (monto, cuotas, interes, total, cuota) => {
+            const { nombre, email } = obtenerDatosFormulario();
+            const saludo = nombre ? `Hola ${nombre.split(' ')[0]}` : 'Tu préstamo';
+
+            document.getElementById('resultadoCalculo').innerHTML = `
+                <div class="resultado">
+                    <h3>${saludo}</h3>
+                    <div class="resultado-item">
+                        <span class="resultado-label">💵 Monto solicitado:</span>
+                        <span class="resultado-valor">$${monto.toLocaleString()}</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="resultado-label">📅 Cantidad de cuotas:</span>
+                        <span class="resultado-valor">${cuotas}</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="resultado-label">📈 Interés total:</span>
+                        <span class="resultado-valor">$${interes.toLocaleString()}</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="resultado-label">💳 Cuota mensual:</span>
+                        <span class="resultado-valor">$${cuota.toLocaleString()}</span>
+                    </div>
+                    <div class="total-destacado">
+                        <div>Total a pagar</div>
+                        <div class="valor">$${total.toLocaleString()}</div>
+                    </div>
+                </div>
+            `;
+        };
+
+        // ==========================================
+        // EJERCICIO 2: GUARDAR EN HISTORIAL
+        // ==========================================
+        const guardarEnHistorial = (monto, cuotas, total) => {
+            // 1. Crear un objeto con la simulación actual (monto, cuotas, total, fecha)
+            const simulacionActual = {
+                monto: monto,
+                cuotas: cuotas,
+                total: total,
+                fecha: new Date().toLocaleString('es-AR')
+            };
+
+            // 2. Agregarlo al array historialSimulaciones usando spread operator
+
+            historialSimulaciones = [...historialSimulaciones, simulacionActual];
+            // 3. Llamar a renderizarHistorial()
+            renderizarHistorial();
+
+        };
+
+        // ==========================================
+        // FUNCIÓN: RENDERIZAR HISTORIAL
+        // ==========================================
+        const renderizarHistorial = () => {
+            const container = document.getElementById('historialContainer');
+
+            if (historialSimulaciones.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>Aún no hay simulaciones</p>
+                    </div>
+                `;
+                return;
+            }
+
+
+              container.innerHTML = historialSimulaciones.map((sim, index) => `
+                <div class="historial-item">
+                    <div class="historial-info">
+                        <div class="historial-fecha">${sim.fecha}</div>
+                        <div class="historial-monto">$${sim.monto.toLocaleString()}</div>
+                        <div>${sim.cuotas} cuotas • Total: $${Math.round(sim.total).toLocaleString()}</div>
+                    </div>
+                    <button onclick="eliminarSimulacion(${index})" class="btn-secondary">
+                        ❌
+                    </button>
+                </div>
+            `).join('');
+            };
+        
+
+            // ==========================================
+            // EJERCICIO 3: ELIMINAR SIMULACIÓN
+            // ==========================================
+            const eliminarSimulacion = (index) => {
+                // Usa .filter() para crear un nuevo array sin el elemento en ese índice
+                historialSimulaciones = historialSimulaciones.filter((_, i) => i !== index);
+                renderizarHistorial();
+            };
+
+            // ==========================================
+            // FUNCIÓN: LIMPIAR HISTORIAL
+            // ==========================================
+            const limpiarHistorial = () => {
+                if (historialSimulaciones.length === 0) {
+                    alert('El historial ya está vacío');
+                    return;
+                }
+
+                if (confirm('¿Estás seguro de limpiar todo el historial?')) {
+                    historialSimulaciones = [];
+                    renderizarHistorial();
+                }
+            };
+        
+            
+
+            // ==========================================
+            // FUNCIÓN: RENDERIZAR PLANES
+            // ==========================================
+            const renderizarPlanes = () => {
+                const container = document.getElementById('planesGrid');
+
+                container.innerHTML = planesDisponibles.map(plan => {
+                    // Calcular valores del plan
+                    const { monto, cuotas, interes } = plan;
+                    const interesTotal = monto * (interes / 100) * cuotas;
+                    const total = monto + interesTotal;
+                    const cuota = total / cuotas;
+
+                    return `
+                    <div class="plan-card" onclick="seleccionarPlan(${plan.id})">
+                        <div class="plan-nombre">${plan.nombre}</div>
+                        <div class="plan-monto">$${monto.toLocaleString()}</div>
+                        <div class="plan-detalle">📅 ${cuotas} cuotas</div>
+                        <div class="plan-detalle">📈 ${interes}% interés</div>
+                        <div class="plan-detalle">💳 Cuota: $${Math.round(cuota).toLocaleString()}</div>
+                    </div>
+                `;
+                }).join('');
+            };
+
+            // ==========================================
+            // EJERCICIO 4: SELECCIONAR PLAN
+            // ==========================================
+            const seleccionarPlan = (idPlan) => {
+                // TU CÓDIGO AQUÍ:
+                // 1. Busca el plan con .find()
+                // 2. Actualiza los valores del formulario (monto, cuotas, interés)
+                // 3. Calcula automáticamente
+
+                const plan = planesDisponibles.find(p => p.id == idPlan);// TU CÓDIGO: usa .find()
+
+                if (!plan) return;
+
+                // Actualizar formulario
+                document.getElementById('monto').value = plan.monto;
+                document.getElementById('cuotas').value = plan.cuotas;
+                document.getElementById('interes').value = plan.interes;
+
+                // Actualizar displays
+                actualizarMonto(plan.monto);
+                actualizarInteres(plan.interes);
+
+                // Calcular
+                calcularPrestamo();
+
+                alert(`Plan ${plan.nombre} seleccionado`);
+            };
+
+            // ==========================================
+            // FUNCIÓN: OBTENER DATOS DEL FORMULARIO
+            // ==========================================
+            const obtenerDatosFormulario = () => {
+                return {
+                    nombre: document.getElementById('nombre').value,
+                    email: document.getElementById('email').value,
+                    telefono: document.getElementById('telefono').value,
+                    comentarios: document.getElementById('comentarios').value
+                };
+            };
+        
+
+            // ==========================================
+            // EJERCICIO 5: ENVIAR SOLICITUD
+            // ==========================================
+            const enviarSolicitud = () => {
+                // TU CÓDIGO AQUÍ:
+                // 1. Obtén los datos del formulario con obtenerDatosFormulario()
+                // 2. Valida que nombre y email no estén vacíos
+                // 3. Obtén los datos del préstamo actual
+                // 4. Muestra un alert con toda la información
+                // 5. Limpia el formulario
+
+                const datos = obtenerDatosFormulario();
+
+                // Validaciones
+                if (!datos.nombre || !datos.email) {
+                    alert('Por favor completá nombre y email');
+                    return;
+                }
+
+                // Obtener datos del préstamo
+                const monto = parseInt(document.getElementById('monto').value);
+                const cuotas = parseInt(document.getElementById('cuotas').value);
+
+                // Mostrar confirmación
+                alert(`¡Solicitud enviada!
+            
+                    📋 Datos del cliente:
+                    Nombre: ${datos.nombre}
+                    Email: ${datos.email}
+                    Teléfono: ${datos.telefono || 'No proporcionado'}
+
+                    💰 Préstamo solicitado:
+                    Monto: $${monto.toLocaleString()}
+                    Cuotas: ${cuotas}
+
+                    Comentarios: ${datos.comentarios || 'Ninguno'}
+
+                    ¡Nos contactaremos pronto!`);
+
+                // Limpiar formulario
+                document.getElementById('nombre').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('telefono').value = '';
+                document.getElementById('comentarios').value = '';
+            };
+
+            // ==========================================
+            // INICIALIZAC
+            // ==========================================
+            renderizarPlanes();
+            renderizarHistorial();
+            calcularPrestamo(); // Cálculo inicial
+            
+    </script>
+</body>
+        
+</html>

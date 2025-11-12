@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito - Luna Servicios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FFD500 0%, #FFB84D 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            color: #5B3FD6;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .productos,
+        .carrito-resumen {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .carrito-resumen {
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .producto-card {
+            border: 2px solid #5B3FD6;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .producto-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(91, 63, 214, 0.2);
+        }
+
+        .producto-info h3 {
+            color: #5B3FD6;
+            margin-bottom: 8px;
+        }
+
+        .producto-precio {
+            font-size: 28px;
+            color: #5B3FD6;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        button {
+            background: #5B3FD6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #4A2FB5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(91, 63, 214, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .carrito-item {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #5B3FD6;
+        }
+
+        .carrito-item-info {
+            flex: 1;
+        }
+
+        .carrito-item h4 {
+            color: #5B3FD6;
+            margin-bottom: 5px;
+        }
+
+        .btn-eliminar {
+            background: #FF6B6B;
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        .btn-eliminar:hover {
+            background: #ff5252;
+        }
+
+        h2 {
+            color: #5B3FD6;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .total {
+            background: #5B3FD6;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .total-label {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .total-monto {
+            font-size: 36px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .btn-vaciar {
+            width: 100%;
+            margin-top: 15px;
+            background: #FF6B6B;
+        }
+
+        .btn-vaciar:hover {
+            background: #ff5252;
+        }
+
+        .carrito-vacio {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .carrito-vacio-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        .badge-contador {
+            background: #FF6B6B;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .carrito-resumen {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<nav>
+        <navigation>
+            <a href="calculadora-prestamo.html">Carrito Avanzado</a>
+        </navigation>
+    </nav>
+
+
+<body>
+    <div class="header">
+        <h1>🌙 Luna Servicios</h1>
+        <p>Elige los préstamos que necesitas</p>
+    </div>
+
+     <div class="container">
+        <!-- COLUMNA IZQUIERDA: PRODUCTOS -->
+        <div class="productos">
+            <h2>📋 Préstamos Disponibles</h2>
+            <div id="listaProductos"></div>
+        </div>
+
+        <!-- COLUMNA DERECHA: CARRITO -->
+        <div class="carrito-resumen">
+            <h2>
+                🛒 Tu Solicitud
+                <span id="contadorCarrito" class="badge-contador">0</span>
+            </h2>
+            <div id="carrito"></div>
+            <div id="totalCarrito"></div>
+            <button onclick="vaciarCarrito()" class="btn-vaciar">
+                🗑️ Vaciar Carrito
+            </button>
+            <button onclick="verResumen()" style="width: 100%; margin-top: 10px; background: #4A90E2;">
+                📄 Ver Resumen
+            </button>
+
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // BASE DE DATOS DE PRODUCTOS
+        // ==========================================
+        const productosDisponibles = [
+            {
+                id: 1,
+                nombre: "Luna Express",
+                monto: 30000,
+                cuotas: 6,
+                plazo: "corto"
+            },
+            {
+                id: 2,
+                nombre: "Luna Start",
+                monto: 50000,
+                cuotas: 12,
+                plazo: "corto"
+            },
+            {
+                id: 3,
+                nombre: "Luna Plus",
+                monto: 100000,
+                cuotas: 24,
+                plazo: "largo"
+            },
+            {
+                id: 4,
+                nombre: "Luna Premium",
+                monto: 150000,
+                cuotas: 36,
+                plazo: "largo"
+            }
+        ];
+
+        // ==========================================
+        // ESTADO DEL CARRITO (aquí guardamos los productos agregados)
+        // ==========================================
+        let carrito = [];
+
+        // ==========================================
+        // FUNCIÓN: MOSTRAR UN PRODUCTO (con destructuring)
+        // ==========================================
+        const mostrarProducto = (producto) => {
+            // DESTRUCTURING: extraemos las propiedades que necesitamos
+            const { id, nombre, monto, cuotas, plazo } = producto;
+
+            return `
+                <div class="producto-card">
+                    <div class="producto-info">
+                        <h3>${nombre}</h3>
+                        <div class="producto-precio">$${monto.toLocaleString()}</div>
+                        <p>📅 ${cuotas} cuotas • ⏱️ Plazo ${plazo}</p>
+                    </div>
+                    <button onclick="agregarAlCarrito(${id})">
+                        Agregar ➕
+                    </button>
+                </div>
+            `;
+        };
+
+        // ==========================================
+        // FUNCIÓN: AGREGAR AL CARRITO (con spread operator)
+        // ==========================================
+        const agregarAlCarrito = (idProducto) => {
+            // .find() busca el producto por ID
+            const producto = productosDisponibles.find(p => p.id === idProducto);
+
+            if (carrito.find(item => item.id === idProducto)) {
+                alert('El producto ya esta en el carrito');
+                return;
+            }
+            if (!producto) {
+                alert('Producto no encontrado');
+                return;
+            }
+
+            // EJERCICIO: Limitar el carrito a máximo 5 productos
+            if (carrito.length >= 5) {
+                alert('No puedes agregar más de 5 préstamos a la vez.');
+                return;
+            }
+
+            // SPREAD OPERATOR: crea un nuevo array copiando el anterior y agregando el nuevo
+            carrito = [...carrito, producto];
+
+            console.log('Producto agregado:', producto.nombre);
+            console.log('Carrito actual:', carrito);
+
+            // Actualizar la vista
+            actualizarCarrito();
+        };
+
+        // ==========================================
+        // FUNCIÓN: ACTUALIZAR LA VISTA DEL CARRITO
+        // ==========================================
+        const actualizarCarrito = () => {
+            const contenedor = document.getElementById('carrito');
+            const contadorElemento = document.getElementById('contadorCarrito');
+
+            // Actualizar contador
+            contadorElemento.textContent = carrito.length;
+
+            // Si el carrito está vacío
+            if (carrito.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="carrito-vacio">
+                        <div class="carrito-vacio-icon">🛒</div>
+                        <p>Tu carrito está vacío</p>
+                        <p style="font-size: 14px; margin-top: 10px;">
+                            Agrega préstamos para comenzar
+                        </p>
+                    </div>
+                `;
+                document.getElementById('totalCarrito').innerHTML = '';
+                return;
+            }
+
+            // Mostrar items del carrito
+            contenedor.innerHTML = carrito.map((item, index) => {
+                // Destructuring del item
+                const { nombre, monto, cuotas } = item;
+
+                return `
+                    <div class="carrito-item">
+                        <div class="carrito-item-info">
+                            <h4>${nombre}</h4>
+                            <p style="font-size: 18px; font-weight: bold; color: #5B3FD6;">
+                                $${monto.toLocaleString()}
+                            </p>
+                            <p style="font-size: 13px; color: #666;">
+                                ${cuotas} cuotas
+                            </p>
+                        </div>
+                        <button onclick="eliminarDelCarrito(${index})" class="btn-eliminar">
+                            ❌
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            // Calcular total con .reduce()
+            const total = carrito.reduce((suma, item) => suma + item.monto, 0);
+
+            // Calcular cantidad de cuotas promedio
+            const promedioPlazos = Math.round(
+                carrito.reduce((suma, item) => suma + item.cuotas, 0) / carrito.length
+            );
+
+            document.getElementById('totalCarrito').innerHTML = `
+                <div class="total">
+                    <div class="total-label">💰 Total Solicitado:</div>
+                    <div class="total-monto">$${total.toLocaleString()}</div>
+                    <p style="margin-top: 15px; font-size: 14px; opacity: 0.9;">
+                        ${carrito.length} préstamo(s) • ~${promedioPlazos} cuotas promedio
+                    </p>
+                </div>
+            `;
+        };
+
+        // ==========================================
+        // FUNCIÓN: ELIMINAR DEL CARRITO
+        // ==========================================
+        const eliminarDelCarrito = (index) => {
+            // SPREAD + FILTER: crea un nuevo array sin el elemento en ese índice
+            carrito = carrito.filter((_, i) => i !== index);
+
+            actualizarCarrito();
+        };
+
+        // ==========================================
+        // FUNCIÓN: VACIAR CARRITO
+        // ==========================================
+        const vaciarCarrito = () => {
+            if (carrito.length === 0) {
+                alert('El carrito ya está vacío');
+                return;
+            }
+
+            if (confirm('¿Estás seguro de vaciar el carrito?')) {
+                carrito = [];
+                actualizarCarrito();
+            }
+        };
+
+        // ==========================================
+        // INICIALIZACIÓN
+        // ==========================================
+        // Renderizar productos al cargar la página
+        document.getElementById('listaProductos').innerHTML =
+            productosDisponibles.map(mostrarProducto).join('');
+
+        // Mostrar carrito vacío inicial
+        actualizarCarrito();
+
+        // ==========================================
+        // TUS EJERCICIOS
+        // ==========================================
+
+        // EJERCICIO 1: Crea una función que limite el carrito a máximo 5 productos
+        // Modifica agregarAlCarrito() para que verifique:
+        // if (carrito.length >= 5) { alert('...'); return; }
+
+        // EJERCICIO 2: Agrega un botón "Ver resumen" que muestre en un alert():
+        // - Cantidad de productos
+        // - Total
+        // - Lista de nombres de productos
+
+        // ==========================================
+        // FUNCIÓN: VER RESUMEN
+        // ==========================================
+        const verResumen = () => {
+            if (carrito.length === 0) {
+                alert('El carrito está vacío');
+                return;
+            }
+            alert('RESUMEN DE SU SOLICITUD:\n\n' +
+                `Cantidad de préstamos: ${carrito.length}\n` +
+                `Total solicitado: $${carrito.reduce((suma, item) => suma + item.monto, 0).toLocaleString()}\n` +
+                `Préstamos:\n- ${carrito.map(item => item.nombre).join('\n- ')}`
+            );
+
+        }
+
+        // EJERCICIO 3: Crea una función buscarProductoPorId(id) que:
+        // - Use .find() para buscar en el carrito
+        // - Retorne true si existe, false si no
+
+        // ==========================================
+        // FUNCIÓN: Buscar Producto Por ID
+        // ==========================================
+
+        /* const productoYaEnCarrito = (idProducto) => {
+             return carrito.some(carrito.find(item => item.id === idProducto) )
+            
+         }*/
+
+    </script>
+</body>
+
+</html>
